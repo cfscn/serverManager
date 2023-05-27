@@ -4,7 +4,18 @@ import "./App.css"
 import { getWebclient } from "./api/index"
 import Switch from "./components/Switch"
 import { Layout, Menu, Typography, Card, Row, Col, Statistic, Divider, Tooltip, Tabs, Button, Input, Form, Popover } from "antd"
-import { LaptopOutlined, PlusOutlined, ArrowUpOutlined, ArrowDownOutlined, DeleteOutlined, SaveOutlined, SettingOutlined } from "@ant-design/icons"
+import {
+	LaptopOutlined,
+	PlusOutlined,
+	ArrowUpOutlined,
+	ArrowDownOutlined,
+	DeleteOutlined,
+	SaveOutlined,
+	SettingOutlined,
+	PoweroffOutlined,
+	CheckCircleOutlined,
+	CloseCircleOutlined,
+} from "@ant-design/icons"
 import InlineSlider from "./components/InlineSlider"
 
 const { TabPane } = Tabs
@@ -272,78 +283,137 @@ function renderServerOverview(server) {
 		server && (
 			<Card>
 				<Typography.Title>{server.name}</Typography.Title>
+				<Divider orientation="left">Operational</Divider>
+				<Row>
+					<Popover
+						trigger="click"
+						content={
+							<Button
+								type="primary"
+								danger
+								onClick={() =>
+									socket.emit("powerSwitch", {
+										type: 1,
+									})
+								}
+							>
+								Confirm operation ?
+							</Button>
+						}
+					>
+						<Button type="primary">
+							<PoweroffOutlined /> Power Switch
+						</Button>
+					</Popover>
+					<Button
+						type="primary"
+						className="btn-margin-left"
+						onClick={() => {
+							socket.emit("powerSwitch", {
+								type: 2,
+							})
+						}}
+					>
+						<CheckCircleOutlined /> Power On
+					</Button>
+					<Popover
+						trigger="click"
+						content={
+							<Button
+								type="primary"
+								danger
+								onClick={() =>
+									socket.emit("powerSwitch", {
+										type: 3,
+									})
+								}
+							>
+								Confirm operation ?
+							</Button>
+						}
+					>
+						<Button type="primary" className="btn-margin-left">
+							<CloseCircleOutlined /> Power Off
+						</Button>
+					</Popover>
+				</Row>
 				<Divider orientation="left">Power</Divider>
 				<Row>
-					{server.sensordata && server.sensordata
-						.filter((x) => ["Volts", "Amps", "Watts"].includes(x?.unit))
-						.map((sensor, i) => (
-							<Tooltip key={sensor.name + sensor.unit + i} title={`Previous value: ${Math.floor(sensor?.previousValue)}`}>
-								<Col span={4}>
-									<Statistic
-										title={sensor?.name}
-										value={sensor?.value}
-										precision={sensor.unit.includes("Amps") ? 2 : 0}
-										// prefix={sensor?.trend > 0 && <ArrowUpOutlined /> || sensor?.trend < 0 && <ArrowDownOutlined />}
-										suffix={
-											<span>
-												{sensor?.unit} {(sensor?.trend > 0 && <ArrowUpOutlined />) || (sensor?.trend < 0 && <ArrowDownOutlined />)}
-											</span>
-										}
-										valueStyle={{
-											color:
-												(sensor.unit !== "Watts" && " ") ||
-												(Number(sensor.value) < Number(200) && "#3f8600") ||
-												(Number(sensor.value) < Number(sensor.WH) && " ") ||
-												"#cf1322",
-										}}
-									/>
-								</Col>
-							</Tooltip>
-						))}
+					{server.sensordata &&
+						server.sensordata
+							.filter((x) => ["Volts", "Amps", "Watts"].includes(x?.unit))
+							.map((sensor, i) => (
+								<Tooltip key={sensor.name + sensor.unit + i} title={`Previous value: ${Math.floor(sensor?.previousValue)}`}>
+									<Col span={4}>
+										<Statistic
+											title={sensor?.name}
+											value={sensor?.value}
+											precision={sensor.unit.includes("Amps") ? 2 : 0}
+											// prefix={sensor?.trend > 0 && <ArrowUpOutlined /> || sensor?.trend < 0 && <ArrowDownOutlined />}
+											suffix={
+												<span>
+													{sensor?.unit} {(sensor?.trend > 0 && <ArrowUpOutlined />) || (sensor?.trend < 0 && <ArrowDownOutlined />)}
+												</span>
+											}
+											valueStyle={{
+												color:
+													(sensor.unit !== "Watts" && " ") ||
+													(Number(sensor.value) < Number(200) && "#3f8600") ||
+													(Number(sensor.value) < Number(sensor.WH) && " ") ||
+													"#cf1322",
+											}}
+										/>
+									</Col>
+								</Tooltip>
+							))}
 				</Row>
 				<Divider orientation="left">Temperature</Divider>
 				<Row>
-					{server.sensordata && server.sensordata
-						.filter((x) => x?.unit === "degrees C")
-						.map((sensor) => (
-							<Tooltip title={`Previous value: ${Math.floor(sensor?.previousValue)}`}>
-								<Col span={4}>
-									<Statistic
-										title={sensor?.name}
-										value={sensor?.value}
-										precision={0}
-										suffix={<span>C {(sensor?.trend > 0 && <ArrowUpOutlined />) || (sensor?.trend < 0 && <ArrowDownOutlined />)}</span>}
-										valueStyle={{
-											color: (Number(sensor.value) > Number(sensor.WL) && Number(sensor.value) < Number(sensor.WH) && " ") || "#cf1322",
-										}}
-									/>
-								</Col>
-							</Tooltip>
-						))}
+					{server.sensordata &&
+						server.sensordata
+							.filter((x) => x?.unit === "degrees C")
+							.map((sensor) => (
+								<Tooltip title={`Previous value: ${Math.floor(sensor?.previousValue)}`}>
+									<Col span={4}>
+										<Statistic
+											title={sensor?.name}
+											value={sensor?.value}
+											precision={0}
+											suffix={<span>C {(sensor?.trend > 0 && <ArrowUpOutlined />) || (sensor?.trend < 0 && <ArrowDownOutlined />)}</span>}
+											valueStyle={{
+												color: (Number(sensor.value) > Number(sensor.WL) && Number(sensor.value) < Number(sensor.WH) && " ") || "#cf1322",
+											}}
+										/>
+									</Col>
+								</Tooltip>
+							))}
 				</Row>
 				<Divider orientation="left">Fans</Divider>
 				<Row>
-					{server.sensordata && server.sensordata
-						.filter((x) => ["RPM"].includes(x?.unit))
-						.map((sensor) => (
-							<Tooltip title={`Previous value: ${Math.floor(sensor?.previousValue)}`}>
-								<Col span={4}>
-									<Statistic
-										title={sensor?.name}
-										value={sensor?.value}
-										precision={0}
-										suffix={
-											<span>
-												{sensor?.unit} {(sensor?.trend > 0 && <ArrowUpOutlined />) || (sensor?.trend < 0 && <ArrowDownOutlined />)}
-											</span>
-										}
-										valueStyle={{
-											color: (Number(sensor.value) > Number(sensor.WL) && Number(sensor.value) < Number(server.warnspeed) && " ") /*"#3f8600" green */ || "#cf1322",
-										}}
-									/>
-								</Col>
-							</Tooltip>
-						))}
+					{server.sensordata &&
+						server.sensordata
+							.filter((x) => ["RPM"].includes(x?.unit))
+							.map((sensor) => (
+								<Tooltip title={`Previous value: ${Math.floor(sensor?.previousValue)}`}>
+									<Col span={4}>
+										<Statistic
+											title={sensor?.name}
+											value={sensor?.value}
+											precision={0}
+											suffix={
+												<span>
+													{sensor?.unit} {(sensor?.trend > 0 && <ArrowUpOutlined />) || (sensor?.trend < 0 && <ArrowDownOutlined />)}
+												</span>
+											}
+											valueStyle={{
+												color:
+													(Number(sensor.value) > Number(sensor.WL) && Number(sensor.value) < Number(server.warnspeed) && " ") /*"#3f8600" green */ ||
+													"#cf1322",
+											}}
+										/>
+									</Col>
+								</Tooltip>
+							))}
 				</Row>
 			</Card>
 		)
