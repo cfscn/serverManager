@@ -69,6 +69,9 @@ class App extends Component {
 				console.error("Couldn't find server for sensordata: ", data, this.state)
 			}
 		})
+		socket.on("powerSwitch", (state) => {
+			alert("Power switch success ")
+		})
 	}
 	render() {
 		let servers = this.state.servers.filter((x) => this.state.selectedKeys.includes(x.address))
@@ -288,13 +291,14 @@ function renderServerOverview(server) {
 				<Row>
 					<Popover
 						trigger="click"
+						title="Power On"
 						content={
 							<Button
 								type="primary"
-								danger
 								onClick={() =>
 									socket.emit("powerSwitch", {
-										type: 1,
+										state: 1,
+										address: server.address,
 									})
 								}
 							>
@@ -308,13 +312,15 @@ function renderServerOverview(server) {
 					</Popover>
 					<Popover
 						trigger="click"
+						title="Power Off"
 						content={
 							<Button
 								type="primary"
 								danger
 								onClick={() =>
 									socket.emit("powerSwitch", {
-										type: 2,
+										state: 2,
+										address: server.address,
 									})
 								}
 							>
@@ -328,13 +334,15 @@ function renderServerOverview(server) {
 					</Popover>
 					<Popover
 						trigger="click"
+						title="Power Soft"
 						content={
 							<Button
-								type="primary"
+								type="default"
 								danger
 								onClick={() =>
 									socket.emit("powerSwitch", {
-										type: 3,
+										state: 3,
+										address: server.address,
 									})
 								}
 							>
@@ -348,14 +356,16 @@ function renderServerOverview(server) {
 					</Popover>
 					<Popover
 						trigger="click"
+						title="Power Reset"
 						className="btn-margin-left"
 						content={
 							<Button
-								type="primary"
+								type="dashed"
 								danger
 								onClick={() =>
 									socket.emit("powerSwitch", {
-										type: 4,
+										state: 4,
+										address: server.address,
 									})
 								}
 							>

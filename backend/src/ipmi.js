@@ -1,5 +1,7 @@
 var exec = require("child_process").exec
 
+var powerState = ["", "on", "off", "soft", "reset"]
+
 function getSensors(config) {
 	return new Promise((resolve) => {
 		let command = `ipmitool -I lanplus -H ${config.address} -U ${config.username} -P ${config.password} sensor`
@@ -49,10 +51,26 @@ function setFanSpeed(config, speed) {
 		})
 	})
 }
+function setPower(config, state) {
+	return new Promise((resolve) => {
+		state = parseInt(state)
+		if (process.argv[2] !== "dev") {
+			var command = `ipmitool -I lanplus -H ${config.address} -U ${config.username} -P ${config.password} power ${powerState[state]}`
+		} else {
+			var command = "ls"
+		}
+		exec(command, (error, out, err) => {
+			// console.log(error, out, err)
+			// console.log(data)
+			resolve(out)
+		})
+	})
+}
 
 module.exports = {
 	getSensors,
 	enableManualFancontrol,
 	enableAutomaticFancontrol,
 	setFanSpeed,
+	setPower,
 }

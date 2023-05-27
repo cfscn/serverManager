@@ -33,7 +33,7 @@ const gauge = new promclient.Gauge({
 })
 
 const units = require("./units")
-const { getSensors, enableManualFancontrol, enableAutomaticFancontrol, setFanSpeed } = require("./ipmi")
+const { getSensors, enableManualFancontrol, enableAutomaticFancontrol, setFanSpeed, setPower } = require("./ipmi")
 mkdirp.sync("./data")
 
 let serversOnDisk = ""
@@ -222,6 +222,12 @@ io.on("connection", (socket) => {
 		socket.on("deleteServer", ({ address }) => {
 			servers = servers.filter((x) => x.address !== address)
 			broadcast("servers", servers)
+		})
+		socket.on("powerSwitch", async ({ address, state }) => {
+			console.log("Power switch server", address, state)
+			let server = servers.find((x) => x.address === address)
+			setPower(server, state)
+			socket.emit("powerSwitch", state)
 		})
 		// socket.on("tagListen", ({ tagname, interval }) => {
 		// 	console.log("Adding listener for", tagname)
