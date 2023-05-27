@@ -15,6 +15,7 @@ import {
 	PoweroffOutlined,
 	CheckCircleOutlined,
 	CloseCircleOutlined,
+	ReloadOutlined,
 } from "@ant-design/icons"
 import InlineSlider from "./components/InlineSlider"
 
@@ -302,20 +303,29 @@ function renderServerOverview(server) {
 						}
 					>
 						<Button type="primary">
-							<PoweroffOutlined /> Power Switch
+							<CheckCircleOutlined /> Power On
 						</Button>
 					</Popover>
-					<Button
-						type="primary"
-						className="btn-margin-left"
-						onClick={() => {
-							socket.emit("powerSwitch", {
-								type: 2,
-							})
-						}}
+					<Popover
+						trigger="click"
+						content={
+							<Button
+								type="primary"
+								danger
+								onClick={() =>
+									socket.emit("powerSwitch", {
+										type: 2,
+									})
+								}
+							>
+								Confirm operation ?
+							</Button>
+						}
 					>
-						<CheckCircleOutlined /> Power On
-					</Button>
+						<Button type="primary" danger className="btn-margin-left">
+							<CloseCircleOutlined /> Power Off
+						</Button>
+					</Popover>
 					<Popover
 						trigger="click"
 						content={
@@ -332,8 +342,29 @@ function renderServerOverview(server) {
 							</Button>
 						}
 					>
-						<Button type="primary" className="btn-margin-left">
-							<CloseCircleOutlined /> Power Off
+						<Button type="default" danger className="btn-margin-left">
+							<PoweroffOutlined /> Power Soft
+						</Button>
+					</Popover>
+					<Popover
+						trigger="click"
+						className="btn-margin-left"
+						content={
+							<Button
+								type="primary"
+								danger
+								onClick={() =>
+									socket.emit("powerSwitch", {
+										type: 4,
+									})
+								}
+							>
+								Confirm operation ?
+							</Button>
+						}
+					>
+						<Button type="dashed" danger>
+							<ReloadOutlined /> Power Reset
 						</Button>
 					</Popover>
 				</Row>
