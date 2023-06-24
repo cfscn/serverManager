@@ -62,8 +62,8 @@ function setPower(config, state) {
 		exec(command, (error, out, err) => {
 			// console.log(error, out, err)
 			// console.log(data)
-			enableManualFancontrol(config);
-			setFanSpeed(config, 10);
+			enableManualFancontrol(config)
+			setFanSpeed(config, 10)
 			resolve(out)
 		})
 	})
