@@ -121,6 +121,8 @@ async function updateServers() {
 				.map((x) => x.value)
 				.sort((a, b) => b - a)[0]
 
+			if(!temperature)
+				return
 			// Determine fan speed
 			let table = new Array(100).fill(0)
 			table = table.map((_, i) => {
