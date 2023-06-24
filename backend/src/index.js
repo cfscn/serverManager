@@ -136,7 +136,7 @@ async function updateServers() {
 			})
 
 			let target_fan_speed = Math.round(table[Math.floor(temperature) || 99])
-			console.log("Highest temperature is", temperature, "Setting fan speed", target_fan_speed, "%")
+			// console.log("Highest temperature is", temperature, "Setting fan speed", target_fan_speed, "%")
 			// Set fan speed on iDRAC
 			setFanSpeed(config, target_fan_speed || 40)
 		}
@@ -166,9 +166,9 @@ function broadcast(channel, data) {
 
 async function updateServerLoop() {
 	let lastUpdateStart = Date.now()
-	console.time("updateServers")
+	// console.time("updateServers")
 	await updateServers()
-	console.timeEnd("updateServers")
+	// console.timeEnd("updateServers")
 	setTimeout(updateServerLoop, lastUpdateStart - Date.now() + 30000)
 }
 updateServerLoop()
